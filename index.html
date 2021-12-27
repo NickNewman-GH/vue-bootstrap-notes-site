@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Notes</title>
+</head>
+<body>
+    <div class="container" id="app">
+        <!--Header-->
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <p class="d-flex h2 align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">Notes</p>
+        
+            <div class="col-md-3 text-end">
+                <button type="button" class="btn btn-outline-primary me-2" @click="toMainPage()">Home</button>
+                <button type="button" class="btn btn-primary" @click="toAddNote()">Add note</button>
+            </div>
+        </header>
+
+        <!--Notes list-->
+        <table v-if="page === 'main'" class="table table-striped" border="1">
+            <thead>
+                <tr>
+                    <th class="text-center">Important</th>
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Type</th>
+                    <th class="w-25"></th>
+                    <th class="w-25"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(note, index) in notes" :key="index" class="align-middle border-1">
+                    <td class="text-center" @click="toNotePage(index)"  role="button">{{ note.important ? '❗' : '' }}</td>
+                    <td class="text-center" @click="toNotePage(index)"  role="button">{{ note.name }}</td>
+                    <td class="text-center" @click="toNotePage(index)"  role="button">{{ note.type }}</td>
+                    <td @click="toNotePage(index)" role="button"></td>
+                    <td class="d-flex justify-content-evenly border-0" >
+                        <button type="button" class="w-100 btn btn-outline-primary me-2" @click="toEditNote(index)">Edit</button>
+                        <button type="button" class="w-100 btn btn-danger ms-2" @click="deleteNote(index)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!--Note-->
+        <div v-if="page === 'note'">
+            <h1 class="mb-3">{{ (notes[noteIndex].important ? '❗' : '') + notes[noteIndex].name }}</h1>
+            <p class="badge fs-5 text-wrap bg-black p-3 text-info text-bold">{{ notes[noteIndex].type }}</p>
+            <p class="fs-3 border-top mt-3 pt-3">{{ notes[noteIndex].text }}</p>
+        </div>
+
+        <!--Add or edit note-->
+        <div v-if="page === 'add' || page === 'edit'">
+            <div v-if="errors.length > 0" class="alert alert-danger" role="alert">
+                <span v-for="error in errors">
+                    {{ error }}<br>
+                </span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInputGrid" v-model="tmpNote.name" placeholder="name">
+                <label for="floatingInputGrid">Note name</label>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" v-model="tmpNote.important" value="" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                  Is important
+                </label>
+              </div>
+
+            <div class="form-floating mb-3">
+                <select v-model="tmpNote.type" class="form-select" id="floatingSelectGrid" aria-label="Floating label select example">
+                    <option v-for="(label, key) in types" :value="key">
+                        {{ label }}
+                    </option>
+                </select>
+                <label for="floatingSelectGrid">Select type of note</label>
+            </div> 
+			
+            <textarea class="form-control mb-3" placeholder="Description text" v-model="tmpNote.text"></textarea>
+
+            <button type="button" class="btn-large btn btn-success" @click="addSaveNote()">{{ page === 'add' ? 'Add' : 'Edit' }}</button>
+        </div>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
